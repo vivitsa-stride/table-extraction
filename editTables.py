@@ -1,6 +1,35 @@
 import pandas as pd
 import openpyxl
-from insert_row_col import insert_column
+import openpyxl
+from openpyxl.utils.cell import get_column_letter
+
+
+def change_cell(file, cell_val):
+    wb = openpyxl.load_workbook(file)
+    sheet = wb.active
+    for dict in cell_val:
+        sheet.cell(row = dict["row"], column = dict["col"]).value = dict["value"]
+    wb.save(file)
+
+import openpyxl
+
+def delete_row(file,rows):
+    wb = openpyxl.load_workbook(file)
+    sheet = wb.active
+    for row in rows:
+        sheet.delete_cols(idx=row)
+    path1 = 'final.xlsx'
+    wb.save(file)
+
+
+def delete_column(file,cols):
+    wb = openpyxl.load_workbook(file)
+    sheet = wb.active
+    for col in cols:
+        sheet.delete_cols(idx=col)
+    path1 = 'final.xlsx'
+    wb.save(file)
+
 
 def merge_tables(files):
     excels = [pd.ExcelFile(name) for name in files]
@@ -56,16 +85,51 @@ def split_cols(file,column,separation_point):
     print("split columns successfully")
     wb.save(file)
 
+
+def insert_row(file,loc,data):
+    '''
+    args:
+        file: file that needs to be edited
+        data: List with values  to insert
+        loc: Location to insert the row
+    '''
+    wb = openpyxl.load_workbook(file)
+    sheet = wb.active
+    sheet.insert_rows(loc)
+    sheet._current_row = loc - 1
+    sheet.append(data)
+    wb.save(file)
+
+def insert_column(file,loc,data):
+
+    wb = openpyxl.load_workbook(file)
+    sheet = wb.active
+    sheet.insert_cols(loc)
+    for row in range(1,len(data)+1):
+        sheet.cell(row = row, column = loc).value = data[row-1]
+    wb.save(file)
+
+
+
+# change cell value
+change_cell("/home/vaibhav/Desktop/vivitsa-workspace/table-extraction/aaa/5-0.csv.xlsx",[{"row":1,"col":1,"value":"changed"}])
+
+
+
 # split columns
-path = "/home/kartavya/Stride/aaa/19-1.csv.xlsx"
+path = "/home/vaibhav/Desktop/vivitsa-workspace/table-extraction/aaa/19-1.csv.xlsx"
 split_cols(path,4,[{"right_cell":"","left_cell":""},{"right_cell":"(+) Total","left_cell":"Principal Collected"},{"right_cell":"(-) Total","left_cell":"Losses"},{"right_cell":"(+) Total","left_cell":"Interest Collected"},{"right_cell":"(+) Total Other","left_cell":"Interest Adjust. Collected"},{"right_cell":"","left_cell":""},{"right_cell":"(-) Total","left_cell":"Fees (Withheld)"},{"right_cell":"","left_cell":""},{"right_cell":"(+) Prepayment","left_cell":"Penalty"},{"right_cell":"","left_cell":""},{"right_cell":"Total Available","left_cell":"Funds from Collection"}])
 
-# merge columns
-for i in range(1,13):
-    merge_cells(path,[{"row":1,"col":i},{"row":3,"col":i}])
+# # merge columns
+# for i in range(1,13):
+#     merge_cells(path,[{"row":1,"col":i},{"row":3,"col":i}])
 
-# merge tables
-path0 = "/home/kartavya/Stride/aaa/3-0.csv.xlsx"
-path1 = "/home/kartavya/Stride/aaa/4-0.csv.xlsx"
-path2 = "/home/kartavya/Stride/aaa/5-0.csv.xlsx"
-merge_tables([path0,path1,path2])
+# # merge tables
+# path0 = "/home/vaibhav/Desktop/vivitsa-workspace/table-extraction/aaa/3-0.csv.xlsx"
+# path1 = "/home/vaibhav/Desktop/vivitsa-workspace/table-extraction/aaa/4-0.csv.xlsx"
+# path2 = "/home/vaibhav/Desktop/vivitsa-workspace/table-extraction/aaa/5-0.csv.xlsx"
+# merge_tables([path0,path1,path2])
+
+# path3 = "/home/vaibhav/Desktop/vivitsa-workspace/table-extraction/aaa/6-0.csv.xlsx"
+# insert_column(path3,2,["a","b","c","d","e",'f','g','h','i'])
+
