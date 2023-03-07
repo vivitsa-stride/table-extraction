@@ -113,20 +113,24 @@ class Extract():
     def extract_page(self,filename,page):
 
         # try:
+        print("page number = ", page)
         df_str = tabula.read_pdf(filename,pages=page,stream=True)
-            
+        if df_str:
+            print("one or more tables exist...")
 
-        for j in range(len(df_str)):
-                name = self.outputDirectory +"/" + "all_in_page_"+str(page) + "-" +str(j)
-                extension = ".xlsx"
-                output_file_name = name+extension
-                if os.path.exists(output_file_name):
-                    output_file_name = name+"(1)"+extension
-                df_str[j].to_csv(output_file_name)
+            for j in range(len(df_str)):
+                    name = self.outputDirectory +"/" + "all_in_page_"+str(page) + "-" +str(j)
+                    extension = ".xlsx"
+                    output_file_name = name+extension
+                    if os.path.exists(output_file_name):
+                        output_file_name = name+"(1)"+extension
+                    df_str[j].to_csv(output_file_name)
 
-        # except Exception as e:
-        #     print(e)
-        return output_file_name
+            # except Exception as e:
+            #     print(e)
+            return output_file_name
+        else:
+            print("no tables found!")
 
 
 
@@ -159,11 +163,13 @@ class Extract():
 
 from time import time
 start_time = time()
-e = Extract(inputFilePath="/home/vaibhav/Desktop/tables_repo/Moodys Sfg2/batch1/9193_20190620.pdf", pageNumber = 4, bbox = None, outputDirectory=None)
+path = "/home/vaibhav/Downloads/Offering-Circular.pdf"
+e = Extract(inputFilePath=path, pageNumber = 35, bbox = None, outputDirectory=None)
 print("results are in: ", e.results)
 
 end_time = time()
 print("time taken = ",end_time-start_time)
+
 
 
 
